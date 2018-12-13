@@ -34,10 +34,12 @@ class HTMLFormsTests: XCTestCase {
         try XCTAssertEqual(nameInput.attr("name"), "name")
         try XCTAssertEqual(nameInput.attr("type"), "text")
         try XCTAssertEqual(nameInput.attr("id"), "edit-name")
+        try XCTAssertEqual(nameInput.attr("value"), "Llama")
         let emailInput = inputs.get(1)
         try XCTAssertEqual(emailInput.attr("name"), "email")
         try XCTAssertEqual(emailInput.attr("type"), "text")
         try XCTAssertEqual(emailInput.attr("id"), "edit-email")
+        try XCTAssertEqual(emailInput.attr("value"), "llama@example.com")
         try print(form.outerHtml())
     }
 

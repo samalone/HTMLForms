@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "HTMLForms",
     dependencies: [
-        .package(url: "https://github.com/samalone/SwiftSoup.git", from: "1.7.4"),
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "1.7.4"),
     ],
     targets: [
         .target(name: "HTMLForms", dependencies: ["SwiftSoup"]),

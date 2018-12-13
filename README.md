@@ -1,6 +1,8 @@
 # HTMLForms
 Construct HTML forms from encodable Swift objects — designed for Vapor
 
+*This library is under development and may see major breaking changes.*
+
 This library assists with creating HTML forms from encodable Swift structs and classes.
 It's intended for use with Vapor, because it names its form inputs such that Vapor can
 parse the resulting form submission back into the same Swift object. The library does
@@ -38,3 +40,20 @@ print(HTMLFormEncoder.encode(request).outerHtml())
  </div>
 </form>
 ```
+
+## Installation
+### Swift Package Manager
+HTMLForms is available through [Swift Package Manager](https://github.com/apple/swift-package-manager). 
+To install it, simply add the dependency to your Package.Swift file:
+
+```swift
+...
+dependencies: [
+    .package(url: "https://github.com/samalone/HTMLForms.git", from: "0.1.0"),
+],
+targets: [
+    .target( name: "YourTarget", dependencies: ["HTMLForms.git"]),
+]
+...
+```
+
