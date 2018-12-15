@@ -6,7 +6,6 @@
 //
 
 import XCTest
-import SwiftSoup
 import HTMLForms
 
 class HTMLFormsTests: XCTestCase {
@@ -25,22 +24,12 @@ class HTMLFormsTests: XCTestCase {
         struct Foo: Codable {
             var name: String;
             var email: String;
+			var birthday: Date;
+			var age: Int;
+			var isAdult: Bool;
         }
-        let form = try HTMLFormEncoder.encode(Foo(name: "Llama", email: "llama@example.com"))
-        try XCTAssertEqual(form.tag(), Tag.valueOf("form"))
-        let inputs: Elements = try form.select("input")
-        XCTAssertEqual(inputs.size(), 2)
-        let nameInput = inputs.get(0)
-        try XCTAssertEqual(nameInput.attr("name"), "name")
-        try XCTAssertEqual(nameInput.attr("type"), "text")
-        try XCTAssertEqual(nameInput.attr("id"), "edit-name")
-        try XCTAssertEqual(nameInput.attr("value"), "Llama")
-        let emailInput = inputs.get(1)
-        try XCTAssertEqual(emailInput.attr("name"), "email")
-        try XCTAssertEqual(emailInput.attr("type"), "text")
-        try XCTAssertEqual(emailInput.attr("id"), "edit-email")
-        try XCTAssertEqual(emailInput.attr("value"), "llama@example.com")
-        try print(form.outerHtml())
+		let form = try HTMLFormEncoder.encode(Foo(name: "Llama", email: "llama@example.com", birthday: Date(), age: 9, isAdult: false))
+        print(form.html)
     }
 
 //    func testPerformanceExample() {

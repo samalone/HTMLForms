@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftSoup
+//import SwiftSoup
 
 public enum HTMLFormEncodingError: Error {
     case cantEncodeSingleValue
@@ -74,64 +74,56 @@ fileprivate struct KeyedFormInputEncodingContainer<Key: CodingKey>: KeyedEncodin
     mutating func encode(_ value: Date, forKey key: Key) throws {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
-        let input = try Element(Tag.valueOf("input"), "")
-        try! input.attr("name", keyToName(key))
-        try! input.attr("type", "date")
-        try! input.attr("value", formatter.string(from: value))
-        try! input.attr("placeholder", key.stringValue.camelCaseExpanded.lowercased())
-        try encoder.container.appendChild(wrapLabelBefore(input: input, forKey: key))
+		let input = Input(name: keyToName(key),
+						  type: "date",
+						  value: formatter.string(from: value),
+						  placeholder: key.stringValue.camelCaseExpanded.lowercased())
+		encoder.container.append(wrapLabelBefore(input: input, forKey: key))
     }
     
-    mutating func encode(_ value: Bool, forKey key: Key) throws {
-        let input = try Element(Tag.valueOf("input"), "")
-        try! input.attr("name", keyToName(key))
-        try! input.attr("type", "checkbox")
-        try! input.attr("value", "true")
+    mutating func encode(_ value: Bool, forKey key: Key) {
+		let input = Input(name: keyToName(key), type: "checkbox", value: "true")
         if (value) {
-            try! input.attr("checked", "checked")
+			input["checked"] = "checked"
         }
-        try encoder.container.appendChild(wrapLabelAfter(input: input, forKey: key))
+        encoder.container.append(wrapLabelAfter(input: input, forKey: key))
     }
     
     private func createLabel(inputId: String, forKey key: Key) -> Element {
         let fiKey = key as? HTMLFormCodingKey
-        let label = try! Element(Tag.valueOf("label"), "")
-        try! label.appendText(fiKey?.label ?? key.stringValue.camelCaseExpanded.capitalized)
-        try! label.attr("for", inputId)
+		let label = Label(for: inputId)
+		label.append(Text(fiKey?.label ?? key.stringValue.camelCaseExpanded.capitalized))
         return label
     }
     
     private func appendErrorAndInstructions(div: Element, forKey key: Key) {
         let fiKey = key as? HTMLFormCodingKey
-        let name = try! keyToName(key)
+        let name = keyToName(key)
         
         if let instructions = fiKey?.instructions {
-            let inst = try! div.appendElement("div")
-            try! inst.addClass("instructions")
-            try! inst.appendText(instructions)
+			let inst = Div(class: "instructions")
+            inst.append(Text(instructions))
         }
         
         if let error = encoder.validationErrors[name] {
-            let err = try! div.appendElement("div")
-            try! err.addClass("error")
-            try! err.appendText(error)
+			let err = Div(class: "error")
+            err.append(Text(error))
         }
     }
     
     private func createFormItem() throws -> Element {
-        let div = try encoder.container.appendElement("div")
-        try div.addClass("form-item")
+		let div = Div(class: "form-item")
+		encoder.container.append(div)
         return div
     }
     
     private func wrapLabelBefore(input: Element, forKey key: Key) -> Element {
         let inputId = "edit-\(key.stringValue)"
-        try! input.attr("id", inputId)
+		input.id = inputId
         
-        let div = try! Element(Tag.valueOf("div"), "")
-        try! div.attr("class", "form-item")
-        try! div.appendChild(createLabel(inputId: inputId, forKey: key))
-        try! div.appendChild(input)
+		let div = Div(class: "form-item")
+		div.append(createLabel(inputId: inputId, forKey: key))
+        div.append(input)
         
         appendErrorAndInstructions(div: div, forKey: key)
         
@@ -140,12 +132,11 @@ fileprivate struct KeyedFormInputEncodingContainer<Key: CodingKey>: KeyedEncodin
     
     private func wrapLabelAfter(input: Element, forKey key: Key) -> Element {
         let inputId = "edit-\(key.stringValue)"
-        try! input.attr("id", inputId)
+		input.id = inputId
         
-        let div = try! Element(Tag.valueOf("div"), "")
-        try! div.attr("class", "form-item")
-        try! div.appendChild(input)
-        try! div.appendChild(createLabel(inputId: inputId, forKey: key))
+		let div = Div(class: "form-item")
+        div.append(input)
+        div.append(createLabel(inputId: inputId, forKey: key))
         
         appendErrorAndInstructions(div: div, forKey: key)
         
@@ -154,25 +145,24 @@ fileprivate struct KeyedFormInputEncodingContainer<Key: CodingKey>: KeyedEncodin
     
     private func encodeDescription(_ value: CustomStringConvertible, forKey key: Key, inputType: String = "text") {
         let fiKey = key as? HTMLFormCodingKey
-        let name = try! keyToName(key)
-        
-        let input = try! Element(Tag.valueOf("input"), "")
-        try! input.attr("name", name)
-        try! input.attr("type", fiKey?.inputType ?? inputType)
-        try! input.attr("value", value.description)
-        try! input.attr("placeholder", key.stringValue.camelCaseExpanded.lowercased())
+        let name = keyToName(key)
+		
+		let input = Input(name: name,
+						  type: fiKey?.inputType ?? inputType,
+						  value: value.description,
+						  placeholder: key.stringValue.camelCaseExpanded.lowercased())
         if encoder.validationErrors[name] != nil {
-            try! input.addClass("error")
+			input.addClass("error")
         }
         
         if let maxLength = fiKey?.maxLength {
-            try! input.attr("maxlength", maxLength.description)
+			input["maxlength"] = maxLength.description
         }
         if let size = fiKey?.size {
-            try! input.attr("size", size.description)
+			input["size"] = size.description
         }
         
-        try! encoder.container.appendChild(wrapLabelBefore(input: input, forKey: key))
+        encoder.container.append(wrapLabelBefore(input: input, forKey: key))
     }
     
     static func codingPathToName(path: [CodingKey]) throws -> String {
@@ -184,7 +174,7 @@ fileprivate struct KeyedFormInputEncodingContainer<Key: CodingKey>: KeyedEncodin
         }
     }
     
-    func keyToName(_ lastKey: CodingKey) throws -> String {
+    func keyToName(_ lastKey: CodingKey) -> String {
         if let firstKey = codingPath.first {
             return codingPath[0 ..< codingPath.count].reduce(firstKey.stringValue) { (prefix, key) -> String in
                 return prefix + "[\(key.stringValue)]"
@@ -206,11 +196,11 @@ fileprivate struct KeyedFormInputEncodingContainer<Key: CodingKey>: KeyedEncodin
         case let d as Date:
             try encode(d, forKey: key)
         case let e as Encodable:
-            let legend = try Element(Tag.valueOf("legend"), "")
-            try! legend.appendText(key.stringValue.camelCaseExpanded.capitalized)
+            let legend = Element("legend")
+            legend.append(Text(key.stringValue.camelCaseExpanded.capitalized))
             
-            let fieldset = try Element(Tag.valueOf("fieldset"), "")
-            try! fieldset.appendChild(legend)
+            let fieldset = Element("fieldset")
+            fieldset.append(legend)
             
             self.encoder.push(key: key, fieldset: fieldset)
             defer { self.encoder.pop() }
@@ -223,11 +213,11 @@ fileprivate struct KeyedFormInputEncodingContainer<Key: CodingKey>: KeyedEncodin
     }
     
     mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
-        let legend = try! Element(Tag.valueOf("legend"), "")
-        try! legend.appendText(key.stringValue.camelCaseExpanded.capitalized)
+		let legend = Element("legend")
+		legend.append(Text(key.stringValue.camelCaseExpanded.capitalized))
         
-        let fieldset = try! Element(Tag.valueOf("fieldset"), "")
-        try! fieldset.appendChild(legend)
+		let fieldset = Element("fieldset")
+		fieldset.append(legend)
         
         encoder.push(key: key, fieldset: fieldset)
         defer { encoder.pop() }
@@ -313,20 +303,17 @@ public class HTMLFormEncoder: Encoder {
     }
     
     func append(_ child: Node) {
-        try! form.appendChild(child)
+        form.append(child)
     }
     
     init(validationErrors: [String : String] = [:]) throws {
-        let form = try Element(Tag.valueOf("form"), "")
-        try! form.attr("method", "post")
-        try! form.attr("accept-charset", "UTF-8")
-        
+        let form = Form()
         containers = [form]
         self.validationErrors = validationErrors
     }
     
     func push(key: CodingKey, fieldset: Element) {
-        try! container.appendChild(fieldset)
+        container.append(fieldset)
         codingPath.append(key)
         containers.append(fieldset)
     }

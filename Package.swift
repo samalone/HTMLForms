@@ -1,14 +1,16 @@
-// swift-tools-version:4.0
+// swift-tools-version:4.2
 import PackageDescription
 
 let package = Package(
     name: "HTMLForms",
+    products: [
+        .library(name: "HTMLForms", targets: ["HTMLForms"]),
+    ],
     dependencies: [
-        .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "1.7.4"),
     ],
     targets: [
-        .target(name: "HTMLForms", dependencies: ["SwiftSoup"]),
-        .testTarget(name: "HTMLFormsTests", dependencies: ["SwiftSoup", "HTMLForms"])
+        .target(name: "HTMLForms", dependencies: []),
+        .testTarget(name: "HTMLFormsTests", dependencies: ["HTMLForms"])
     ]
 )
 

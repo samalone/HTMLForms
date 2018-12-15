@@ -1,5 +1,8 @@
 # HTMLForms
-Construct HTML forms from encodable Swift objects — designed for Vapor
+Construct HTML forms from encodable Swift objects — designed for [Vapor](https://vapor.codes)
+
+[![language: Swift](https://img.shields.io/badge/language-swift-orange.svg?logo=swift&logoColor=FA7343)](https://swift.org)
+[![pre-release](https://img.shields.io/github/release-pre/samalone/HTMLForms.svg)](https://github.com/samalone/HTMLForms/releases)
 
 *This library is under development and may see major breaking changes.*
 
